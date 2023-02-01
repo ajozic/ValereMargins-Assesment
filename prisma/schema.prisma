@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Age {
+  Children
+  Youth
+  YoungAdults
+  Adults
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  email String @unique
+  hash  String
+
+  role Role @default(USER)
+
+  firstName  String
+  lastName   String
+  age        Age
+  isEnrolled Boolean? @default(false)
+
+  
+  class      Class? @relation(fields: [classId], references: [id])
+  classId    Int?
+
+  @@map("users")
+}
+
+model Class {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  name     String @unique
+  time     String
+  duration Int
+  description String
+  age      Age
+  rating   Decimal
+  comments String
+
+  users   User[]    
+
+  @@map("classes")
+}
+
